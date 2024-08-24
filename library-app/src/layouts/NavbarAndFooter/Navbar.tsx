@@ -35,7 +35,7 @@ export const Navbar = () => {
                     <ul className='navbar-nav ms-auto'>
                         {!authState.isAuthenticated ?
                             <li className='nav-item m-1'>
-                                <Link href='#' type='button' className='btn btn-outline-light' to='/login'>Sign in</Link>
+                                <Link type='button' className='btn btn-outline-light' to='/login'>Sign in</Link>
                             </li>
                             :
                             <li>
