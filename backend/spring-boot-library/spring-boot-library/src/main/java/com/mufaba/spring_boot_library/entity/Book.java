@@ -2,7 +2,8 @@ package com.mufaba.spring_boot_library.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Generated;
+
+
 
 @Entity
 @Table(name = "book")

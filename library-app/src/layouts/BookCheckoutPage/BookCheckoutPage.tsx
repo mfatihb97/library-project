@@ -6,9 +6,13 @@ import { StarsReview } from '../Utils/StarsReview';
 import {CheckoutAndReviewBox } from './CheckoutAndReviewBox';
 import ReviewModel from '../../models/ReviewModel';
 import { LatestReviews } from './LatestReviews';
+import { useOktaAuth } from '@okta/okta-react';
+import { error } from 'console';
 
 
 export const BookCheckoutPage = () => {
+
+    const {authState}=useOktaAuth();
 
     const [book, setBook] = useState<BookModel>();
     const [isLoading, setIsLoading] = useState(true);
@@ -18,6 +22,10 @@ export const BookCheckoutPage = () => {
     const [reviews,setReviews]=useState<ReviewModel[]>([])
     const [totalStars,setTotalStars]=useState(0);
     const [isLoadingReview,setIsLoadingReview]=useState(true);
+
+    // Loans Count State
+    const [currentLoansCount,setCurrentLoansCount]=useState(0);
+    const [isLoadingCurrentLoansCount,setIsLoadingCurrrentLoansCount] = useState(true);
 
     const bookId = (window.location.pathname).split('/')[2];
 
@@ -100,7 +108,36 @@ export const BookCheckoutPage = () => {
         })
     },[])
 
-    if (isLoading || isLoadingReview) {
+    useEffect(()=>{
+        const fetchUserCurrentLoansCount= async() => {
+            if(authState && authState.isAuthenticated){
+                const url =`http://localhost:8080/api/books/secure/currentloans/count`;
+                const requestOptions={
+                    method:'GET',
+                    headers:{
+                        Authorization:`Bearer ${authState.accessToken?.accessToken}`,
+                        'Content-Type':'application/json'
+
+                    }
+                }
+                const currentLoansCountResponse = await fetch(url,requestOptions);
+
+                if(currentLoansCountResponse.ok){
+                    throw new Error('Something went wrong!');
+                }
+
+                const currentLoansCountResponseJson = await currentLoansCountResponse.json();
+                setCurrentLoansCount(currentLoansCountResponseJson)
+            }
+            setIsLoadingCurrrentLoansCount(false)
+        }
+        fetchUserCurrentLoansCount().catch((error:any)=>{
+            setIsLoadingCurrrentLoansCount(false);
+            setHttpError(error.message);
+        })
+    },[authState]);
+
+    if (isLoading || isLoadingReview || isLoadingCurrentLoansCount ) {
         return (
             <SpinnerLoading />
         )
