@@ -18,7 +18,7 @@ public class ExtractJWT {
         String payload = new String(decoder.decode(chunks[1]));
 
         String[] entries = payload.split(",");
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<String,String>();
 
         for (String entry : entries) {
             String[] keyValue = entry.split(":");
