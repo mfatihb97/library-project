@@ -101,7 +101,7 @@ export const Loans = () => {
                                             </div>
                                             <hr />
                                             <p className="mt-3">
-                                                    Help other find their adventure by reviewing your loan.
+                                                Help other find their adventure by reviewing your loan.
                                             </p>
                                             <Link className="btn btn-primary" to={`/checkout/${shelfCurrentLoan.book.id}`}>
                                                 Leave a review
@@ -113,16 +113,16 @@ export const Loans = () => {
 
                             </div>
                         ))}
-                    </>:
-                     <>
+                    </> :
+                    <>
                         <h3 className="mt-3">
                             Currently no loans
                         </h3>
                         <Link className="btn btn-primary" to={'search'}>
-                        Search for a new book
+                            Search for a new book
                         </Link>
-                     </> 
-            }
+                    </>
+                }
             </div>
         </div>
     )
