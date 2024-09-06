@@ -45,7 +45,7 @@ export const HistoryPage = () => {
         })
     }, [authState, currentPage]);
 
-    if (!isLoadingHistory) {
+    if (isLoadingHistory) {
         return (<SpinnerLoading />)
     }
 

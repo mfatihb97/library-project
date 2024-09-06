@@ -7,8 +7,6 @@ import com.mufaba.spring_boot_library.entity.Book;
 import com.mufaba.spring_boot_library.entity.Checkout;
 import com.mufaba.spring_boot_library.entity.History;
 import com.mufaba.spring_boot_library.responsemodels.ShelfCurrentLoansResponse;
-import com.nimbusds.oauth2.sdk.util.date.SimpleDate;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
