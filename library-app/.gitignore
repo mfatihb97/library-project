@@ -8,6 +8,8 @@ pnpm-debug.log*
 lerna-debug.log*
 src/lib/oktaConfig.ts
 .env
+localhost.conf
+ssl-localhost
 
 node_modules
 dist
