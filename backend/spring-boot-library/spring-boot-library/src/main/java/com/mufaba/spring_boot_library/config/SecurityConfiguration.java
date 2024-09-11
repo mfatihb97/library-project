@@ -24,18 +24,18 @@ public class SecurityConfiguration {
         http.csrf(AbstractHttpConfigurer::disable);
 
         // Protect endpoints at /api/<type>/secure
-        http.authorizeHttpRequests(configurer ->
-                        configurer
-                                .requestMatchers("/api/books/secure/**",
-                                        "/api/reviews/secure/**"
-                                        ,"/api/messages/secure/**"
-                                        ,"/api/admin/secure/**)")
-                                .authenticated()
-                                .anyRequest()
-                                .permitAll())
-                .oauth2ResourceServer(oauth2 ->
-                        oauth2.jwt(Customizer.withDefaults())
-                );
+//        http.authorizeHttpRequests(configurer ->
+//                        configurer
+//                                .requestMatchers("/api/books/secure/**",
+//                                        "/api/reviews/secure/**"
+//                                        ,"/api/messages/secure/**"
+//                                        ,"/api/admin/secure/**)")
+//                                .authenticated()
+//                                .anyRequest()
+//                                .permitAll())
+//                .oauth2ResourceServer(oauth2 ->
+//                        oauth2.jwt(Customizer.withDefaults())
+//                );
 
         // Add CORS filters
         http.cors(Customizer.withDefaults());
