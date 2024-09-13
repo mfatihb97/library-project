@@ -27,9 +27,9 @@ export const ManageLibraryPage = () => {
         setMessagesClick(true);
     }
 
-    /* if(authState?.accessToken?.claims.userType=== undefined){
+    if(authState?.accessToken?.claims.sub != 'adminuser@email.com'){
         return <Redirect to='/home'/>
-    } */
+    } 
     return (
         <div className="container">
             <div className="mt-5">
