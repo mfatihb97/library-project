@@ -107,6 +107,10 @@ Project Structure
 
 css
 
+
+
+
+
 root
 │
 ├── backend                # Spring Boot application
