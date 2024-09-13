@@ -3,7 +3,7 @@ import BookModel from '../../models/BookModel'
 import { SpinnerLoading } from '../Utils/SpinnerLoading';
 import bookImage from './../../Images/BooksImages/book-luv2code-1000.png';
 import { StarsReview } from '../Utils/StarsReview';
-import {CheckoutAndReviewBox } from './CheckoutAndReviewBox';
+import { CheckoutAndReviewBox } from './CheckoutAndReviewBox';
 import ReviewModel from '../../models/ReviewModel';
 import { LatestReviews } from './LatestReviews';
 import { useOktaAuth } from '@okta/okta-react';
@@ -12,28 +12,31 @@ import ReviewRequestModel from '../../models/ReviewRequestModel';
 
 export const BookCheckoutPage = () => {
 
-    const {authState}=useOktaAuth();
+    const { authState } = useOktaAuth();
 
     const [book, setBook] = useState<BookModel>();
     const [isLoading, setIsLoading] = useState(true);
     const [httpError, setHttpError] = useState(null);
-    
-    // Review State
-    const [reviews,setReviews]=useState<ReviewModel[]>([])
-    const [totalStars,setTotalStars]=useState(0);
-    const [isLoadingReview,setIsLoadingReview]=useState(true);
 
-    const [isReviewLeft,setIsReviewLeft] = useState(false);
-    const [isLoadingUserReview,setIsLoadingUserReview]= useState(true)
+    // Review State
+    const [reviews, setReviews] = useState<ReviewModel[]>([])
+    const [totalStars, setTotalStars] = useState(0);
+    const [isLoadingReview, setIsLoadingReview] = useState(true);
+
+    const [isReviewLeft, setIsReviewLeft] = useState(false);
+    const [isLoadingUserReview, setIsLoadingUserReview] = useState(true)
 
     // Loans Count State
-    const [currentLoansCount,setCurrentLoansCount]=useState(0);
-    const [isLoadingCurrentLoansCount,setIsLoadingCurrrentLoansCount] = useState(true);
+    const [currentLoansCount, setCurrentLoansCount] = useState(0);
+    const [isLoadingCurrentLoansCount, setIsLoadingCurrrentLoansCount] = useState(true);
 
     // Is Book Checked Out?
-    const [isCheckedOut,setIsCheckedOut]=useState(false);
-    const [isLoadingBookCheckedOut,setIsLoadingBookCheckedOut]= useState(false);
+    const [isCheckedOut, setIsCheckedOut] = useState(false);
+    const [isLoadingBookCheckedOut, setIsLoadingBookCheckedOut] = useState(false);
     const bookId = (window.location.pathname).split('/')[2];
+
+    // Payment
+    const [displayError, setDisplayError] = useState(false);
 
 
     useEffect(() => {
@@ -71,13 +74,13 @@ export const BookCheckoutPage = () => {
     }, [isCheckedOut]);
 
 
-    useEffect(()=>{
-        const fetchBookReviews = async()=>{
-            const reviewUrl:string=`${import.meta.env.VITE_REACT_APP_API}/reviews/search/findByBookId?bookId=${bookId}`;
+    useEffect(() => {
+        const fetchBookReviews = async () => {
+            const reviewUrl: string = `${import.meta.env.VITE_REACT_APP_API}/reviews/search/findByBookId?bookId=${bookId}`;
 
             const responseReviews = await fetch(reviewUrl);
 
-            if(!responseReviews.ok){
+            if (!responseReviews.ok) {
                 throw new Error('Something went wrong!');
             }
 
@@ -85,49 +88,49 @@ export const BookCheckoutPage = () => {
 
             const responseData = responseJsonReviews._embedded.reviews;
 
-            const loadedReviews:ReviewModel[]=[]
+            const loadedReviews: ReviewModel[] = []
 
-            let weightedStarReviews:number=0;
-            for(const key in responseData){
+            let weightedStarReviews: number = 0;
+            for (const key in responseData) {
                 loadedReviews.push({
-                    id:responseData[key].id,
-                    userEmail:responseData[key].userEmail,
-                    date:responseData[key].date,
-                    rating:responseData[key].rating,
-                    book_id:responseData[key].book_id,
-                    reviewDescription:responseData[key].reviewDescription
+                    id: responseData[key].id,
+                    userEmail: responseData[key].userEmail,
+                    date: responseData[key].date,
+                    rating: responseData[key].rating,
+                    book_id: responseData[key].book_id,
+                    reviewDescription: responseData[key].reviewDescription
                 });
-                weightedStarReviews=weightedStarReviews+responseData[key].rating;
+                weightedStarReviews = weightedStarReviews + responseData[key].rating;
             }
-            if(loadedReviews){
-                const round = (Math.round((weightedStarReviews/loadedReviews.length)*2)/2).toFixed(1)
+            if (loadedReviews) {
+                const round = (Math.round((weightedStarReviews / loadedReviews.length) * 2) / 2).toFixed(1)
                 setTotalStars(Number(round));
             }
-            
+
             setReviews(loadedReviews);
             setIsLoadingReview(false);
         }
 
-        fetchBookReviews().catch((error:any)=>{
+        fetchBookReviews().catch((error: any) => {
             setIsLoadingReview(false);
             setHttpError(error.message)
         })
-    },[isReviewLeft])
+    }, [isReviewLeft])
 
-    useEffect(()=>{
-        const fetchUserReviewBook = async ()=>{
-            if(authState && authState.isAuthenticated){
+    useEffect(() => {
+        const fetchUserReviewBook = async () => {
+            if (authState && authState.isAuthenticated) {
                 const url = `${import.meta.env.VITE_REACT_APP_API}/reviews/secure/user/book?bookId=${bookId}`;
-                const requestOptions={
-                    method:'GET',
-                    headers:{
-                        Authorization:`Bearer ${authState.accessToken?.accessToken}`,
-                        'Content-Type':'application/json'
+                const requestOptions = {
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Bearer ${authState.accessToken?.accessToken}`,
+                        'Content-Type': 'application/json'
                     }
                 };
-                const userReview = await fetch(url,requestOptions);
+                const userReview = await fetch(url, requestOptions);
 
-                if(!userReview.ok){
+                if (!userReview.ok) {
                     throw new Error('Something went wrong!');
                 }
                 const userReviewResponseJson = await userReview.json();
@@ -136,27 +139,27 @@ export const BookCheckoutPage = () => {
 
             setIsLoadingUserReview(false);
         }
-        fetchUserReviewBook().catch((error:any)=>{
+        fetchUserReviewBook().catch((error: any) => {
             setIsLoadingUserReview(false);
             setHttpError(error.message);
         })
-    },[authState])
+    }, [authState])
 
-    useEffect(()=>{
-        const fetchUserCurrentLoansCount= async() => {
-            if(authState && authState.isAuthenticated){
-                const url =`${import.meta.env.VITE_REACT_APP_API}/books/secure/currentloans/count`;
-                const requestOptions={
-                    method:'GET',
-                    headers:{
-                        Authorization:`Bearer ${authState.accessToken?.accessToken}`,
-                        'Content-Type':'application/json'
+    useEffect(() => {
+        const fetchUserCurrentLoansCount = async () => {
+            if (authState && authState.isAuthenticated) {
+                const url = `${import.meta.env.VITE_REACT_APP_API}/books/secure/currentloans/count`;
+                const requestOptions = {
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Bearer ${authState.accessToken?.accessToken}`,
+                        'Content-Type': 'application/json'
 
                     }
                 }
-                const currentLoansCountResponse = await fetch(url,requestOptions);
+                const currentLoansCountResponse = await fetch(url, requestOptions);
 
-                if(!currentLoansCountResponse.ok){
+                if (!currentLoansCountResponse.ok) {
                     throw new Error('Something went wrong!');
                 }
 
@@ -165,26 +168,26 @@ export const BookCheckoutPage = () => {
             }
             setIsLoadingCurrrentLoansCount(false)
         }
-        fetchUserCurrentLoansCount().catch((error:any)=>{
+        fetchUserCurrentLoansCount().catch((error: any) => {
             setIsLoadingCurrrentLoansCount(false);
             setHttpError(error.message);
         })
-    },[authState,isCheckedOut]);
+    }, [authState, isCheckedOut]);
 
-    useEffect(()=>{
-        const fetchUserCheckedOutBook = async() => {
-            if(authState && authState.isAuthenticated){
+    useEffect(() => {
+        const fetchUserCheckedOutBook = async () => {
+            if (authState && authState.isAuthenticated) {
                 const url = `${import.meta.env.VITE_REACT_APP_API}/books/secure/ischeckedout/byuser?bookId=${bookId}`;
                 const requestOptions = {
-                    method:'GET',
-                    headers:{
-                        Authorization:`Bearer ${authState.accessToken?.accessToken}`,
-                        'Content-Type':'application/json'
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Bearer ${authState.accessToken?.accessToken}`,
+                        'Content-Type': 'application/json'
                     }
                 };
-                const bookCheckedOut = await fetch(url,requestOptions);
+                const bookCheckedOut = await fetch(url, requestOptions);
 
-                if(!bookCheckedOut.ok){
+                if (!bookCheckedOut.ok) {
                     throw new Error('Something went wrong!');
                 }
 
@@ -195,13 +198,13 @@ export const BookCheckoutPage = () => {
             setIsLoadingBookCheckedOut(false);
 
         }
-        fetchUserCheckedOutBook().catch((error:any)=>{
+        fetchUserCheckedOutBook().catch((error: any) => {
             setIsLoadingBookCheckedOut(false);
             setHttpError(error.message);
         })
-    },[authState])
+    }, [authState])
 
-    if (isLoading || isLoadingReview || isLoadingCurrentLoansCount || isLoadingBookCheckedOut||isLoadingUserReview) {
+    if (isLoading || isLoadingReview || isLoadingCurrentLoansCount || isLoadingBookCheckedOut || isLoadingUserReview) {
         return (
             <SpinnerLoading />
         )
@@ -217,37 +220,39 @@ export const BookCheckoutPage = () => {
     async function checkOutBook() {
         const url = `${import.meta.env.VITE_REACT_APP_API}/books/secure/checkout?bookId=${book?.id}`;
         const requestOptions = {
-            method:'PUT',
-            headers:{
+            method: 'PUT',
+            headers: {
                 Authorization: `Bearer ${authState?.accessToken?.accessToken}`,
-                'Content-Type':'application/json'
+                'Content-Type': 'application/json'
             }
         };
-        const checkoutRespnonse = await fetch(url,requestOptions);
-        if(!checkoutRespnonse.ok){
+        const checkoutRespnonse = await fetch(url, requestOptions);
+        if (!checkoutRespnonse.ok) {
+            setDisplayError(true);
             throw new Error('Something went wrong!');
         }
+        setDisplayError(false);
         setIsCheckedOut(true)
     }
 
-    async function submitReview(starInput:number,reviewDescription:string){
-        let bookId:number=0;
-        if(book?.id){
-            bookId=book.id;
+    async function submitReview(starInput: number, reviewDescription: string) {
+        let bookId: number = 0;
+        if (book?.id) {
+            bookId = book.id;
         }
 
-        const reviewRequestModel = new ReviewRequestModel(starInput,bookId,reviewDescription);
-        const url =`${import.meta.env.VITE_REACT_APP_API}/reviews/secure`;
-        const requestOptions={
-            method:'POST',
-            headers:{
+        const reviewRequestModel = new ReviewRequestModel(starInput, bookId, reviewDescription);
+        const url = `${import.meta.env.VITE_REACT_APP_API}/reviews/secure`;
+        const requestOptions = {
+            method: 'POST',
+            headers: {
                 Authorization: `Bearer ${authState?.accessToken?.accessToken}`,
-                'Content-Type':'application/json'
+                'Content-Type': 'application/json'
             },
-            body:JSON.stringify(reviewRequestModel)
+            body: JSON.stringify(reviewRequestModel)
         }
-        const returnResponse = await fetch(url,requestOptions)
-        if(!returnResponse.ok){
+        const returnResponse = await fetch(url, requestOptions)
+        if (!returnResponse.ok) {
             throw new Error('Something went wrong!');
         }
         setIsReviewLeft(true);
@@ -256,6 +261,11 @@ export const BookCheckoutPage = () => {
     return (
         <div>
             <div className='container d-none d-lg-block'>
+                {displayError &&
+                    <div className='alert alert-danger mt-3' role='alert'>
+                        Please pay outstanding fees and/or return late book(s).
+                    </div>
+                }
                 <div className='row mt-5'>
                     <div className='col-sm-2 col-md-2'>
                         {book?.img ?
@@ -274,12 +284,17 @@ export const BookCheckoutPage = () => {
                         </div>
                     </div>
                     <CheckoutAndReviewBox book={book} mobile={false} currentLoansCount={currentLoansCount} isAuthenticated={authState?.isAuthenticated}
-                    isCheckedOut={isCheckedOut} checkOutBook={checkOutBook} isReviewLeft={isReviewLeft} submitReview={submitReview} />
+                        isCheckedOut={isCheckedOut} checkOutBook={checkOutBook} isReviewLeft={isReviewLeft} submitReview={submitReview} />
                 </div>
                 <hr />
-                <LatestReviews reviews={reviews} bookId={book?.id} mobile={false}/>
+                <LatestReviews reviews={reviews} bookId={book?.id} mobile={false} />
             </div>
             <div className='container d-lg-none mt-5'>
+                {displayError &&
+                    <div className='alert alert-danger mt-3' role='alert'>
+                        Please pay outstanding fees and/or return late book(s).
+                    </div>
+                }
                 <div className='d-flex justify-content-center align-items-center'>
                     {book?.img ?
                         <img src={book?.img} width='226' height='349' alt="book" />
@@ -296,13 +311,13 @@ export const BookCheckoutPage = () => {
                     </div>
                 </div>
                 <CheckoutAndReviewBox book={book} mobile={true} currentLoansCount={currentLoansCount}
-                isAuthenticated={authState?.isAuthenticated}
-                isCheckedOut={isCheckedOut}
-                checkOutBook={checkOutBook}
-                isReviewLeft={isReviewLeft}
-                submitReview={submitReview}/>
+                    isAuthenticated={authState?.isAuthenticated}
+                    isCheckedOut={isCheckedOut}
+                    checkOutBook={checkOutBook}
+                    isReviewLeft={isReviewLeft}
+                    submitReview={submitReview} />
                 <hr />
-                <LatestReviews reviews={reviews} bookId={book?.id}  mobile={true}/>
+                <LatestReviews reviews={reviews} bookId={book?.id} mobile={true} />
             </div>
         </div>
     )
