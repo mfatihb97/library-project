@@ -103,30 +103,7 @@ Security
 User roles and permissions are managed using JWT tokens, OAuth2, and OIDC.
 HTTPS/SSL/TLS is set up for secure data transmission.
 
-Project Structure
 
-css
-
-
-
-
-
-root
-│
-├── backend                # Spring Boot application
-│   └── src
-│       └── main
-│           └── java
-│           └── resources
-│
-├── frontend               # React application
-│   └── src
-│       └── components
-│       └── pages
-│       └── services
-│
-└── README.md
-Contributing
 Feel free to fork the repository, submit issues, or create pull requests. All contributions are welcome!
 
 
